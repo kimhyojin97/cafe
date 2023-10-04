@@ -5,6 +5,7 @@ import java.util.List;
 import com.ktdsuniversity.edu.bbs.vo.BoardVO;
 
 public interface BoardDAO {
+	//주석입니다.
 	/**
 	 * DB에 저장된 모든 게시글의 수를 조회
 	 * @return
