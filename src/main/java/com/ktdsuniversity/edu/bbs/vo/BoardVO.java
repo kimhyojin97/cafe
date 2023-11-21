@@ -1,5 +1,7 @@
 package com.ktdsuniversity.edu.bbs.vo;
 
+import com.ktdsuniversity.edu.member.vo.MemberVO;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -10,9 +12,6 @@ public class BoardVO {
 	
 	@NotBlank(message = "내용을 입력해 주세요.")
 	private String content;
-	
-	@NotBlank(message = "이메일을 입력해 주세요.")
-	@Email(message  = "올바른 형식으로 입력해 주세요.")
 	private String email;
 	
 	private int viewCnt;
@@ -21,6 +20,11 @@ public class BoardVO {
 	private String fileName;
 	private String originFileName;
 	private String ipAddr;
+	
+	/**
+	 * 게시글을 작성한 회원의 정보
+	 */
+	private MemberVO memberVO;
 	
 	public int getId() {
 		return id;
@@ -82,4 +86,11 @@ public class BoardVO {
 	public void setIpAddr(String ipAddr) {
 		this.ipAddr = ipAddr;
 	}
+	public MemberVO getMemberVO() {
+		return memberVO;
+	}
+	public void setMemberVO(MemberVO memberVO) {
+		this.memberVO = memberVO;
+	}
+	
 }

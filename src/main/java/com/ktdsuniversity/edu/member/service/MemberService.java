@@ -17,5 +17,21 @@ public interface MemberService {
 	 * @return 회원가입이 정상적으로 처리되었는지 여부
 	 */
 	public boolean createNewMember(MemberVO memberVO);
+	
+	/**
+	 * 이메일과 비밀번호로 회원정보를 조회
+	 * 비밀번호가 3회 틀릴 경우 로그인은 블럭되며,
+	 * 과리자가 처리하기 전까지는 로그인이 불가능 하다.
+	 * @param memberVO 이메일과 비밀번호
+	 * @return 이메일과 비밀번호가 일치하는 회원정보
+	 */
+	public MemberVO getMember(MemberVO memberVO);
+	
+	/**
+	 * 회원을 탈퇴시킨다.
+	 * @param email 탈퇴시틸 회원의 이메일
+	 * @return 탈퇴 성공 여부
+	 */
+	public boolean deleteMe(String email);
 
 }

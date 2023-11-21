@@ -1,0 +1,69 @@
+<!-- 
+	*Logback 설정. (Log를 어디에 어떻게 쌓을 것인지 설정하는 파일)
+	    scan: logback 설정 파일이 변경되었는지 검사한다.
+  scanPeriod: 몇 초 주기로 변경 검사를 할 것인지 설정.
+ -->
+<configuration scan = "true" scanPeriod ="30 seconds ">
+
+<!-- 
+	appender: 실행 이력 쌓는 설정.
+		name: appender의 이름.
+	   class: 실행 이력을 쌓는 방식을 설정
+	     "ch.qos.logback.core.ConsoleAppender"
+	     - 콘솔에 실행 이력을 출력하는 클래스.
+ -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- encoders are assigned the type
+         ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+    <encoder>
+      <pattern>** %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} -%kvp- %msg%n</pattern>
+    </encoder>
+  </appender>
+  <appender name="FILE" 
+  class="ch.qos.logback.core.rolling.RollingFileAppender">
+  
+  <!--  로그 파일을 쌓을 위치를 지정 -->
+    <file>c:/logs/cafe.log</file>
+    
+    <!-- rollingPolicy 날짜가 지난 로그들은 별도의 파일로 분리작성 시키는 설정
+    = 로그를 말았다! -->
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- 
+      파일의 패턴에 따라 시간이 지나면 별도의 파일로 분리보관한다.
+      cafe.2023-10-05.log
+      cafe.2023-10.06.log
+       -->
+      <fileNamePattern>c:/logs/cafe.log.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+      <!-- keep 30 days' worth of history capped at 3GB total size -->
+      <!-- 
+      		maxHistory: 30일이 지난 로그는 삭제한다. 
+       -->
+      <maxHistory>30</maxHistory>
+      
+      <!-- 
+      		totalSizeCap: 보관하고 있는 로그의 총량이 3GB가 넘어가면 가장 마지막 로그부터
+      		삭제한다. 그러나 로그는 지워지면 안되기 때문에 아래 설정은 필요 없어 주석처리함. 
+       -->
+     <!-- <totalSizeCap>3GB</totalSizeCap> --> 
+
+    </rollingPolicy>
+
+    <encoder>
+      <pattern>%-4relative [%thread] %-5level %logger{35} -%kvp- %msg%n</pattern>
+    </encoder>
+  </appender> 
+  
+ <!--  encoder: 어떤 형태로 로그를 만들 것인지 설정.  -->
+  <root level="debug">
+  <!--
+   	 	root: 로그 정책 기본 설정.
+	 	 - level로 로그 정책을 설정한다. 
+	 	 - level 에는 ERROR, WARN, INFO, DEBUG, TRACE 등이 있음.
+appender-ref:appender의 이름을 작성한다. 이곳에 등록된 appender만 실행된다. 
+ -->
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="FILE" />  
+    
+  </root>
+</configuration>

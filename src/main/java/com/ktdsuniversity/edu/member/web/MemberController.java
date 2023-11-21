@@ -6,17 +6,23 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ktdsuniversity.edu.member.service.MemberService;
 import com.ktdsuniversity.edu.member.vo.MemberVO;
+import com.ktdsuniversity.edu.member.vo.validategroup.MemberLoginGroup;
+import com.ktdsuniversity.edu.member.vo.validategroup.MemberRegistGroup;
 
-import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller //객체로 만들고 빈컨테이너에 넣어줌.
 public class MemberController {
@@ -29,7 +35,8 @@ public class MemberController {
 	}
 	
 	@PostMapping("/member/regist")
-	public ModelAndView doRegistMember(@Valid @ModelAttribute MemberVO memberVO
+	public ModelAndView doRegistMember(@Validated(MemberRegistGroup.class) 
+									   @ModelAttribute MemberVO memberVO
 									, BindingResult bindingResult) {
 		ModelAndView modelAndView = new ModelAndView();
 		if(bindingResult.hasErrors()) {
@@ -59,5 +66,61 @@ public class MemberController {
 		
 		//Map을 반환하면 @ResponseBody에 의해 JSON으로 응답된다.
 		return responseMap;
+	}
+	
+	@GetMapping("/member/login")
+	public String viewLoginPage() {
+		return "member/memberlogin";
+	}
+	
+	@PostMapping("/member/login")
+	public ModelAndView doLogin(@Validated(MemberLoginGroup.class) 
+								@ModelAttribute MemberVO memberVO
+								, BindingResult bindingResult
+								, HttpSession session
+								, HttpServletRequest request) {
+		ModelAndView modelAndView = new ModelAndView();
+		//접근 IP받아와서 할당.
+		memberVO.setLatestAccessIp(request.getRemoteAddr());
+		
+		if(bindingResult.hasErrors()) {
+			modelAndView.setViewName("member/memberlogin");
+			modelAndView.addObject("memberVO", memberVO);
+			return modelAndView;
+		}
+		
+		MemberVO member = memberService.getMember(memberVO);
+		session.setAttribute("_LOGIN_USER_", member);
+
+		modelAndView.setViewName("redirect:/board/list");
+		return modelAndView;
+	}
+	
+	@GetMapping("/member/logout")
+	public String doLogout(HttpSession session) {
+		session.invalidate();
+		return "redirect:/board/list";
+	}
+	
+	@GetMapping("/member/delete-me")
+	public String doDeleteMe( //JSP sessionScope._LOGIN_USER_ 와 같은 기능을 함.
+							@SessionAttribute("_LOGIN_USER_") MemberVO memberVO
+							, HttpSession session) {
+		boolean isSuccess = memberService.deleteMe(memberVO.getEmail());
+		if(!isSuccess) {
+			return "redirect:/member/fail-delete-me";
+		}
+		session.invalidate();
+		return "redirect:/member/success-delete-me";	
+	}
+	
+	@GetMapping("/member/{result}-delete-me")
+	public String viewDeleteMePage(@PathVariable String result) {
+		result = result.toLowerCase();
+		if(!result.equals("fail") && !result.equals("success")) {
+			//result의 값이 fail, success가 아니면 404페이지 보여주기
+			return "error/404";
+		}
+		return "member/" + result + "deleteme";
 	}
 }

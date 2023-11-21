@@ -38,4 +38,9 @@ public class CustomBeanInitializer {
 		fileHandler.setEnalbeObfuscation(enableObfuscation);
 		return fileHandler;
 	}
+	
+	@Bean
+	public SHA sha() {
+		return new SHA();
+	}
 }

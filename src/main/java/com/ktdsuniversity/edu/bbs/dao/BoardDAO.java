@@ -3,14 +3,16 @@ package com.ktdsuniversity.edu.bbs.dao;
 import java.util.List;
 
 import com.ktdsuniversity.edu.bbs.vo.BoardVO;
+import com.ktdsuniversity.edu.bbs.vo.SearchBoardVO;
 
 public interface BoardDAO {
 	//주석입니다.
 	/**
 	 * DB에 저장된 모든 게시글의 수를 조회
+	 * @param serchBoardVO 검색할 조건(페이지 번호, 노출할 목록의 개수 등)
 	 * @return
 	 */
-	public int getBoardAllCount();
+	public int getBoardAllCount(SearchBoardVO searchBoardVO);
 	
 	/**
 	 * DB에 저장된 모든 게시글의 목록을 조회
@@ -53,4 +55,11 @@ public interface BoardDAO {
 	 * @return DB에 Delete한 게시글의 수
 	 */
 	public int deleteOneBoard(int id);
+	
+	/**
+	 * DB에 저장된 모든 게시글의 목록 조회
+	 * @param serchBoardVO 검색할 조건(페이지 번호, 노출할 목록의 개수 등)
+	 * @return DB에 조회된 게시글의 목록
+	 */
+	public List<BoardVO> searchAllBoard(SearchBoardVO searchBoardVO);
 }

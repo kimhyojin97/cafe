@@ -4,11 +4,13 @@ import java.io.File;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ktdsuniversity.edu.bbs.dao.BoardDAO;
 import com.ktdsuniversity.edu.bbs.vo.BoardListVO;
 import com.ktdsuniversity.edu.bbs.vo.BoardVO;
+import com.ktdsuniversity.edu.bbs.vo.SearchBoardVO;
 import com.ktdsuniversity.edu.beans.FileHandler;
 import com.ktdsuniversity.edu.beans.FileHandler.StoreFile;
 
@@ -25,15 +27,19 @@ public class BoardServiceImpl implements BoardService {
 	private BoardDAO boardDAO;
 	
 	@Override
-	public BoardListVO getAllBoard() {
-		System.out.println(boardDAO);
-		System.out.println(boardDAO.getClass().getSimpleName());
+	public BoardListVO getAllBoard(SearchBoardVO searchBoardVO) {
 		BoardListVO boardListVO = new BoardListVO();
-		boardListVO.setBoardCnt(boardDAO.getBoardAllCount());
-		boardListVO.setBoardList(boardDAO.getAllBoard());
+		boardListVO.setBoardCnt(boardDAO.getBoardAllCount(searchBoardVO));
+		
+		if(searchBoardVO == null) {
+			boardListVO.setBoardList(boardDAO.getAllBoard());
+		}else {
+			boardListVO.setBoardList(boardDAO.searchAllBoard(searchBoardVO));
+		}
 		return boardListVO;
 	}
-
+	
+	@Transactional
 	@Override
 	public boolean createNewBoard(BoardVO boardVO, MultipartFile file) {
 		StoreFile storedFile = fileHandler.storeFile(file);
@@ -75,7 +81,8 @@ public class BoardServiceImpl implements BoardService {
 		//DB에 등록한 개수가 0보다 크다면 성공(true). 아니라면 실패(false).
 		return createCount > 0;
 	}
-
+	
+	@Transactional
 	@Override
 	public BoardVO getOneBoard(int id, boolean isIncrease) {
 		if(isIncrease) {
@@ -96,6 +103,7 @@ public class BoardServiceImpl implements BoardService {
 		return boardVO;
 	}
 	
+	@Transactional
 	@Override
 	public boolean updateOneBoard(BoardVO boardVO, MultipartFile file) {
 		//파일을 업로드 했는지 확인.
@@ -119,7 +127,8 @@ public class BoardServiceImpl implements BoardService {
 		int updateCount = boardDAO.upDateOneBoard(boardVO);
 		return updateCount > 0;
 	}
-
+	
+	@Transactional
 	@Override
 	public boolean deleteOneBoard(int id) {
 		//삭제되기 전의 게시물 가져오기

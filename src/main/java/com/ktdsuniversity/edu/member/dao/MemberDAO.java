@@ -16,4 +16,54 @@ public interface MemberDAO {
 	 * @return DB에 Insert한 회원의 개수
 	 */
 	public int createNewMember(MemberVO memberVO);
+	
+	/**
+	 * 로그인시 비밀번호 암호화를 위해 기존에 발급했던 salt값을 조회
+	 * @param email 조회할 이메일
+	 * @return 회원가입 시 발급받은 salt번호
+	 */
+	public String getSalt(String email);
+	
+	/**
+	 * 이메일과 비밀번호로 회원정보를 조회
+	 * @param memberVO 이메일과 비밀번호
+	 * @return 이메일과 비밀번호가 일치하는 회원 정보
+	 */
+	public MemberVO getMember(MemberVO memberVO);
+	
+	/**
+	 * 로그인이 정상적으로 수행되었을 때,
+	 * LOGIN_CNT는 0
+	 * LATEST_LOGIN_SUCCESS_DATE는 현재 시간으로
+	 * LATEST_ACCESS_IP는 현재 IP로 업데이트 한다.
+	 * @param memberVO 이메일과 접근 IP
+	 * @return 업데이트된 회원 정보의 수
+	 */
+	public int successLogin(MemberVO memberVO);
+	
+	/**
+	 * 로그인이 실패했을 때(이메일운 맞지만 비밀번호가 틀린경우),
+	 * LOGIN_CNT는 1증가하고
+	 * LATEST_LOGIN_FAIL_DATE는 현재시간으로
+	 * LATEST_ACCESS_IP는 현재 IP로 업데이트 한다.
+	 * @param memberVO 이메일과 접근 IP
+	 * @return 업데이트된 회원 정보의 수
+	 */
+	public int failLogin(MemberVO memberVO);
+	
+	/**
+	 * 로그인이 3회 실패했을 때 BLOCK_YN을 Y로 변경한다.
+	 * BLOCK_YN이 Y인 회원은 절대 로그인 할 수 없다.
+	 * @param email
+	 * @return
+	 */
+	public int blockMember(String email);
+	
+	/**
+	 * 회원 DELETE쿼리를 실행한다.
+	 * @param email 삭제할 회원의 이메일
+	 * @return DB에 DELETE한 회원의 수
+	 */
+	public int deleteMe(String email);
+	
 }
